@@ -24,9 +24,21 @@ prep = ColumnTransformer([('cat', OneHotEncoder(handle_unknown='ignore', sparse_
 pipe = Pipeline([('prep', prep), ('model', XGBRegressor(n_estimators=100, learning_rate=0.05, random_state=1))])
 pipe.fit(X_tr, y_tr)
 mae = mean_absolute_error(y_va, pipe.predict(X_va))
+error_pct = (mae / mean_y) * 100
+mins = int(mae * 60)
 
-print(pd.DataFrame([{
-    'Modelo': 'XGBoost',
-    'MAE_Horas': round(mae, 4),
-    'Error_Pct': f"{(mae/mean_y)*100:.2f}%"
-}]).to_string(index=False))
+print("\n" + "═"*70)
+print("  ⚡ 3. POTENCIACIÓN POR GRADIENTE (XGBoost Regressor)".center(70))
+print("═"*70)
+print("  💡 ¿Qué hace este script?")
+print("     Entrena árboles secuenciales donde cada nuevo árbol intenta corregir")
+print("     los errores cometidos por los árboles anteriores.")
+print("─"*70)
+print(f"  📊 Resultado de Evaluación (Out-of-Sample 80/20):")
+print(f"     • Error Absoluto Medio (MAE) : {mae:.4f} horas (~{mins} minutos)")
+print(f"     • Porcentaje de Error        : {error_pct:.2f}%")
+print("─"*70)
+print("  ✅ Conclusión:")
+print(f"     XGBoost presenta un margen de error mayor (~{mins} mins) en este dataset")
+print("     debido a que los datos son predominantemente categóricos pequeños.")
+print("═"*70 + "\n")

@@ -24,9 +24,21 @@ prep = ColumnTransformer([('cat', OneHotEncoder(handle_unknown='ignore', sparse_
 pipe = Pipeline([('prep', prep), ('model', DecisionTreeRegressor(max_leaf_nodes=150, random_state=1))])
 pipe.fit(X_tr, y_tr)
 mae = mean_absolute_error(y_va, pipe.predict(X_va))
+error_pct = (mae / mean_y) * 100
+mins = int(mae * 60)
 
-print(pd.DataFrame([{
-    'Modelo': 'DecisionTree_Simple',
-    'MAE_Horas': round(mae, 4),
-    'Error_Pct': f"{(mae/mean_y)*100:.2f}%"
-}]).to_string(index=False))
+print("\n" + "═"*70)
+print("  📌 1. ÁRBOLES DE DECISIÓN SIMPLES (DecisionTreeRegressor)".center(70))
+print("═"*70)
+print("  💡 ¿Qué hace este script?")
+print("     Entrena un árbol de decisión dividiendo los datos en ramas según las")
+print("     características del perfume (Marca, Tipo, Categoría, Audiencia).")
+print("─"*70)
+print(f"  📊 Resultado de Evaluación (Out-of-Sample 80/20):")
+print(f"     • Error Absoluto Medio (MAE) : {mae:.4f} horas (~{mins} minutos)")
+print(f"     • Porcentaje de Error        : {error_pct:.2f}%")
+print("─"*70)
+print("  ✅ Conclusión:")
+print(f"     El modelo simple predice la durabilidad del perfume con un margen")
+print(f"     de error promedio de solo {mins} minutos frente a la realidad.")
+print("═"*70 + "\n")
