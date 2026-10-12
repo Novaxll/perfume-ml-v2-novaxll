@@ -1,6 +1,7 @@
 import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
+import joblib
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
@@ -20,6 +21,7 @@ train_X, val_X, train_y, val_y = train_test_split(X, y, test_size=0.2, random_st
 progression = []
 nodes = [5, 15, 30, 75, 150]
 base_mae = None
+best_model = None
 
 for step, n in enumerate(nodes, start=1):
     m = DecisionTreeRegressor(max_leaf_nodes=n, random_state=1)
@@ -36,5 +38,9 @@ for step, n in enumerate(nodes, start=1):
         'Error_Pct': f"{err_pct:.2f}%",
         'Error_Reduction': f"-{reduction:.2f}%"
     })
+    best_model = m
 
 print(pd.DataFrame(progression).to_string(index=False))
+
+joblib.dump(best_model, 'model.pkl')
+print("Modelo guardado exitosamente en model.pkl")
