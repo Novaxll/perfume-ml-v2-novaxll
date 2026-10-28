@@ -25,20 +25,21 @@ jobs:
 
       - name: download dataset
         if: ${{ github.event.client_payload.dataseturl != null && github.event.client_payload.dataseturl != '' }}
-        run: wget -O data/Perfumes_dataset.csv "${{ github.event.client_payload.dataseturl }}"
+        run: |
+          mkdir -p data
+          wget -O data/Perfumes_dataset.csv "${{ github.event.client_payload.dataseturl }}"
 
       - name: train model
         run: python model/train.py
 
       - name: docker login
-        if: ${{ secrets.DOCKER_USER != '' && secrets.DOCKER_PASSWORD != '' }}
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
 
       - name: docker build and push
-        if: ${{ secrets.DOCKER_USER != '' && secrets.DOCKER_PASSWORD != '' }}
         run: |
           TAG="${{ github.event.client_payload.sha || 'latest' }}"
           IMAGE="${{ secrets.DOCKER_USER }}/${{ secrets.MODEL_NAME }}:${TAG}"
