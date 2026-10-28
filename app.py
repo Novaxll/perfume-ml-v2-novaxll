@@ -31,8 +31,7 @@ def add_cors_headers(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return response
 
-HTML_PAGE = """
-<!DOCTYPE html>
+HTML_PAGE = """<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -48,7 +47,7 @@ HTML_PAGE = """
         label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; color: #334155; }
         input, select { width: 100%; padding: 0.65rem 0.75rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 0.92rem; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-        button { width: 100%; padding: 0.8rem; border-radius: 8px; background: #2563eb; color: white; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; transition: background 0.15s; }
+        button { width: 100%; padding: 0.8rem; border-radius: 8px; background: #2563eb; color: white; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; }
         button:hover { background: #1d4ed8; }
         button.retrain-btn { background: #0f766e; }
         button.retrain-btn:hover { background: #115e59; }
@@ -107,7 +106,7 @@ HTML_PAGE = """
             </form>
 
             <div id="predResult" class="result-box">
-                <div id="predLabel">Duración Estimada (Modelo 100%):</div>
+                <div id="predLabel">Duración Estimada:</div>
                 <div class="val" id="predValue">0.00 horas</div>
                 <div id="predMeta" style="font-size:0.8rem; margin-top:0.3rem;"></div>
             </div>
@@ -125,7 +124,7 @@ HTML_PAGE = """
                 </select>
 
                 <label>URL del Dataset (Cloudinary Raw URL):</label>
-                <input type="url" id="dataseturl" placeholder="https://res.cloudinary.com/p9kjggho/raw/upload/.../perfumes_100.csv" required>
+                <input type="url" id="dataseturl" required>
 
                 <div class="grid-2">
                     <div>
@@ -182,7 +181,7 @@ HTML_PAGE = """
                 box.style.display = 'block';
                 document.getElementById('predLabel').innerText = `Duración Estimada (Modelo ${data.dataset_used}%):`;
                 document.getElementById('predValue').innerText = `${data.prediction[0].toFixed(2)} horas`;
-                document.getElementById('predMeta').innerText = data.mae ? `MAE del modelo: ${data.mae} hrs | Filas: ${data.rows}` : '';
+                document.getElementById('predMeta').innerText = data.mae ? `MAE: ${data.mae} hrs | Registros: ${data.rows}` : '';
             }
         });
 
@@ -208,17 +207,16 @@ HTML_PAGE = """
             if (res.ok) {
                 statusBox.style.background = '#dcfce7';
                 statusBox.style.color = '#166534';
-                statusBox.innerText = `✅ Workflow disparado con éxito (HTTP ${data.status}). Revisa la pestaña Actions en tu GitHub.`;
+                statusBox.innerText = `Workflow disparado con éxito (HTTP ${data.status}). Revisa la pestaña Actions en GitHub.`;
             } else {
                 statusBox.style.background = '#fee2e2';
                 statusBox.style.color = '#991b1b';
-                statusBox.innerText = `❌ Error: ${data.error || 'No se pudo disparar el workflow'}`;
+                statusBox.innerText = `Error: ${data.error || 'No se pudo disparar el workflow'}`;
             }
         });
     </script>
 </body>
-</html>
-"""
+</html>"""
 
 @app.route('/', methods=['GET'])
 def index():
@@ -256,7 +254,7 @@ def retrain():
     sha = body.get('sha', 'latest')
 
     if not token:
-        return jsonify({'error': 'Falta el GitHub Token (ingrésalo o configúralo en GITHUB_TOKEN)'}), 400
+        return jsonify({'error': 'Falta el GitHub Token'}), 400
 
     url = f'https://api.github.com/repos/{repo}/dispatches'
     payload = json.dumps({
