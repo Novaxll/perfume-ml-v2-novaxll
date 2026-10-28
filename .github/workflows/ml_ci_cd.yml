@@ -40,10 +40,15 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
 
       - name: docker build and push
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          MODEL_NAME: ${{ secrets.MODEL_NAME }}
+          INPUT_SHA: ${{ github.event.client_payload.sha }}
         run: |
-          TAG="${{ github.event.client_payload.sha || 'latest' }}"
-          IMAGE="${{ secrets.DOCKER_USER }}/${{ secrets.MODEL_NAME }}:${TAG}"
-          LATEST="${{ secrets.DOCKER_USER }}/${{ secrets.MODEL_NAME }}:latest"
+          TAG="${INPUT_SHA:-latest}"
+          echo "Publicando con Tag: $TAG"
+          IMAGE="${DOCKER_USER}/${MODEL_NAME}:${TAG}"
+          LATEST="${DOCKER_USER}/${MODEL_NAME}:latest"
           docker build -t "$IMAGE" -t "$LATEST" .
           docker push "$IMAGE"
           docker push "$LATEST"
